@@ -70,9 +70,6 @@ app.post(prefix + '/register', async (req, res) => {
       password: newPassword,
     }).then((res) => console.log(res)).exec()
 
-
-
-   
   } catch (err) {
     res.json({ status: 'error', error: 'Duplicate email' })
   }
