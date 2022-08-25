@@ -11,9 +11,9 @@ var config = require('./config');
 
 
 
-let mongoose = require('mongoose');
-mongoose.Promise = global.Promise;
-const uri = 'mongodb+srv://mbds:mbds@premium.hsosy.mongodb.net/premium?retryWrites=true&w=majority';
+// let mongoose = require('mongoose');
+// mongoose.Promise = global.Promise;
+// const uri = 'mongodb+srv://mbds:mbds@premium.hsosy.mongodb.net/premium?retryWrites=true&w=majority';
 
 
 
@@ -25,15 +25,15 @@ const options = {
   useFindAndModify: false
 };
 
-mongoose.connect(uri, options)
-  .then(() => {
-    console.log("Connecté à la base MongoDB assignments dans le cloud !");
-    console.log("at URI = " + uri);
-    console.log("vérifiez with http://localhost:8010/api/assignments que cela fonctionne")
-  },
-    err => {
-      console.log('Erreur de connexion: ', err);
-    });
+// mongoose.connect(uri, options)
+//   .then(() => {
+//     console.log("Connecté à la base MongoDB assignments dans le cloud !");
+//     console.log("at URI = " + uri);
+//     console.log("vérifiez with http://localhost:8010/api/assignments que cela fonctionne")
+//   },
+//     err => {
+//       console.log('Erreur de connexion: ', err);
+//     });
 
 // Pour accepter les connexions cross-domain (CORS)
 app.use(cors())
@@ -47,71 +47,81 @@ let port = process.env.PORT || 8010;
 // les routes
 const prefix = '/api';
 
-app.route(prefix + '/assignments')
+  app.route(prefix + '/clients/add')
+  .get(assignment.addClientCpt)
 
-  .get(assignment.getAssignments)
-  .post(assignment.postAssignment)
-  .put(assignment.updateAssignment);
+  app.route(prefix + '/clients/remove')
+  .get(assignment.deleteClientCpt)
+  
+  app.route(prefix + '/clients/online')
+  .get(assignment.isOnline)
+  app.route(prefix + '/clients/offline')
+  .get(assignment.isOffline)
 
-app.route(prefix + '/assignments/:id')
-  .get(assignment.getAssignment)
-  .delete(assignment.deleteAssignment);
+  app.route(prefix + '/clients/nbrClient')
+  .get(assignment.getNbrClient)
+  app.route(prefix + '/clients/status')
+  .get(assignment.getStatus)
+
+// app.route(prefix + '/assignments/:id')
+//   .get(assignment.getAssignment)
+//   .delete(assignment.deleteAssignment);
 
 //implementation de la partie de securité JWT , login ,register
 app.use(express.json())
 // Registre
-app.post(prefix + '/register', async (req, res) => {
-  console.log(req.body)
-  try {
-    const newPassword = await bcrypt.hash(req.body.password, 10)
-    await User.create({
-      name: req.body.name,
-      email: req.body.email,
-      password: newPassword,
-    }).then((res) => console.log(res)).exec()
+// app.post(prefix + '/register', async (req, res) => {
+//   console.log(req.body)
+//   try {
+//     const newPassword = await bcrypt.hash(req.body.password, 10)
+//     await User.create({
+//       name: req.body.name,
+//       email: req.body.email,
+//       password: newPassword,
+//     }).then((res) => console.log(res)).exec()
 
-  } catch (err) {
-    res.json({ status: 'error', error: 'Duplicate email' })
-  }
-})
+//   } catch (err) {
+//     res.json({ status: 'error', error: 'Duplicate email' })
+//   }
+// })
 
 
 //Login
-app.post(prefix + '/login', async (req, res) => {
+// app.post(prefix + '/login', async (req, res) => {
 
 
-  const user = await User.findOne({
-    email: req.body.email,
-  })
-    .exec()
+//   const user = await User.findOne({
+//     email: req.body.email,
+//   })
+//     .exec()
 
-  if (user) {
+//   if (user) {
 
-    const isPasswordValid = await bcrypt.compare(
-      req.body.password,
-      user.password
-    )
+//     const isPasswordValid = await bcrypt.compare(
+//       req.body.password,
+//       user.password
+//     )
 
-    if (isPasswordValid) {
-      const token = jwt.sign(
-        {
-          name: user.name,
-          email: user.email,
-        },
-        'igor'
-      )
-      console.log("token: " + token)
+//     if (isPasswordValid) {
+//       const token = jwt.sign(
+//         {
+//           name: user.name,
+//           email: user.email,
+//         },
+//         'igor'
+//       )
+//       console.log("token: " + token)
 
-      return res.json({ status: 'ok', email: user.email, token: token })
-    } else {
+//       return res.json({ status: 'ok', email: user.email, token: token })
+//     } else {
 
-      return res.json({ status: 'error', token: '' })
-    }
-  } else {
-    return res.json({ status: 'error', token: '' })
+//       return res.json({ status: 'error', token: '' })
+//     }
+//   } else {
+//     return res.json({ status: 'error', token: '' })
 
-  }
-})
+//   }
+// })
 
 
 // On démarre le serveur
@@ -119,5 +129,4 @@ app.listen(port, "0.0.0.0");
 console.log('Serveur démarré sur http://localhost:' + port);
 
 module.exports = app;
-
 

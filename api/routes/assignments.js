@@ -3,6 +3,9 @@ const jwt = require('jsonwebtoken')
 
 var config = require('../config');
 
+var userNumber = 0 ;
+var online  = ""
+
 
 
 // version avec pagination
@@ -45,56 +48,38 @@ function getAssignment(req, res){
     })
 }
 
-// Ajout d'un assignment (POST)
-function postAssignment(req, res){
-    let assignment = new Assignment();
-    assignment.id = req.body.id;
-    assignment.nom = req.body.nom;
-    assignment.note = req.body.note
-    assignment.nomDevoir = req.body.nomDevoir
-    assignment.remarque = req.body.remarque
-    var mydate = new Date(req.body.dateDeRendu);
-    var newdate= (mydate.getMonth() + 1) + '/' + mydate.getDate() + '/' +  mydate.getFullYear();
-    assignment.dateDeRendu = newdate
-    assignment.rendu = req.body.rendu;
-    assignment.matiere= req.body.matiere;
-    console.log("POST assignment reçu :");
-    console.log(assignment)
-    assignment.save( (err) => {
-        if(err){
-            res.send('cant post assignment ', err);
-        }
-        res.json({ message: `${assignment.nom} saved!`})
-    })
+function addClientCpt(req,res){
+    userNumber++;
+    console.log("nombre de client qui attend :: " + userNumber)
+    res.json({"nbrClient" : userNumber});
 }
 
-// Update d'un assignment (PUT)
-function updateAssignment(req, res) {
-    console.log("UPDATE recu assignment : ");
-    console.log(req.body);
-    Assignment.findByIdAndUpdate(req.body._id, req.body, {new: true}, (err, assignment) => {
-        if (err) {
-            console.log(err);
-            res.send(err)
-        } else {
-          res.json({message: 'updated'})
-        }
-
-    });
-
+function deleteClientCpt(req,res){
+    if(userNumber=== 0){}else{userNumber--;}
+    console.log("nombre de client qui attend :: " + userNumber)
+    res.json({"nbrClient" : userNumber});
 }
 
-// suppression d'un assignment (DELETE)
-function deleteAssignment(req, res) {
+function isOnline(req,res){
+    console.log("ne5dm")
+    online = "ne5dm"
+    res.json({"status" : "Mahloul"});
+}
 
-    Assignment.findByIdAndRemove(req.params.id, (err, assignment) => {
-        if (err) {
-            res.send(err);
-        }
-        res.json({message: `${assignment.nom} deleted`});
-    })
+function isOffline(req,res){
+    console.log("ma ne5dmch")
+    online = "Msaker"
+    res.json({"status" : "Msaker"});
+}
+
+function getNbrClient(req,res){
+    res.json({"nbrClient" : userNumber});
+}
+
+function getStatus(req,res){
+    res.json({"status" : online });
 }
 
 
 
-module.exports = { getAssignments, postAssignment, getAssignment, updateAssignment, deleteAssignment };
+module.exports = { addClientCpt , deleteClientCpt , isOnline , isOffline , getStatus , getNbrClient};
