@@ -9,8 +9,6 @@ var cors = require('cors');
 var config = require('./config');
 
 
-
-
 // let mongoose = require('mongoose');
 // mongoose.Promise = global.Promise;
 // const uri = 'mongodb+srv://mbds:mbds@premium.hsosy.mongodb.net/premium?retryWrites=true&w=majority';
